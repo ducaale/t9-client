@@ -17,7 +17,7 @@ const Keyboard = ({ onBackspace, onInput, onCycle }) => {
       <button onClick={() => onInput('8')}>8 tuv</button>
       <button onClick={() => onInput('9')}>9 wxyz</button>
       <button onClick={() => onCycle()}>*</button>
-      <button onClick={() => onInput(' ')}>0 ⌴</button>
+      <button disabled onClick={() => onInput(' ')}>0 ⌴</button>
       <button disabled>#</button>
     </div>
   )
