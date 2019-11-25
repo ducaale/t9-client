@@ -1,22 +1,32 @@
-.App {
-  text-align: center;
+.Body {
+  width: calc(3 * 64px);
+  display: grid;
+  gap: 8px;
+  grid-template-rows: 140px auto;
+  margin: 24px auto;
 }
 
-.App-logo {
-  height: 40vmin;
+.Keyboard {
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  grid-template-rows: 32px repeat(4, 64px);
+  gap: 8px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.Screen {
+  display: inline-block;
+  border: 1px solid #333;
+  font-family: monospace;
+  padding: 2px 4px;
 }
 
-.App-link {
-  color: #09d3ac;
+@keyframes cursor {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.Screen-cursor {
+  opacity: 1;
+  animation: cursor 1s infinite;
 }
