@@ -1,6 +1,6 @@
 # T9 Client
 
-This is a T9 keyboard app. in order to use it, you will need [T9 server](https://github.com/ducaale/t9-client) running.
+This is a T9 keyboard app. in order to use it, you will need [T9 server](https://github.com/ducaale/t9-server) running.
 
 ## Requirements
 * Nodejs v10 or greater
