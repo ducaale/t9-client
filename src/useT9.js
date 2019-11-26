@@ -79,7 +79,8 @@ const useT9 = () => {
     output: output.join(' '),
     addChar: char => dispatch({ type: 'add_char', char }),
     deleteChar: () => dispatch({ type: 'delete_char' }),
-    cyclePrediction: () => setPredictionIndex(prev => prev + 1)
+    cyclePrediction: () =>
+      setPredictionIndex(prev => (prev + 1) % predictions.length)
   }
 }
 
