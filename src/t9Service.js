@@ -4,8 +4,12 @@ export const getPrediction = input => (
     .then(res => {
       if (res.status !== 200) {
         console.log(`there was an http error, status code: ${res.status}`)
+        return []
       }
       return res.json()
     })
-    .catch(() => console.log('server side error has occured'))
+    .catch(() => {
+      console.log('server side error has occured')
+      return []
+    })
 )
