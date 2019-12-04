@@ -1,8 +1,8 @@
 import { useState, useReducer, useEffect } from 'react';
 import { getPrediction } from './t9Service'
 
-const initialState = { input: [''], output: [''] }
-const IOReducer = (state, action) => {
+const ioInitialState = { input: [''], output: [''] }
+const ioReducer = (state, action) => {
   const {input, output } = state
   switch(action.type) {
     case 'add_char':
@@ -40,14 +40,21 @@ const IOReducer = (state, action) => {
       }
     
     case 'update_last_output':
-      if (!input[input.length-1].length) {
+      const lastInput = input[input.length-1]
+      const { updatedWord } = action
+
+      if (!lastInput.length) {
         console.log('should not update an empty word')
+        return state
+      }
+      if (lastInput.length !== updatedWord.length) {
+        console.log('ignoring stale word')
         return state
       }
 
       return {
         ...state,
-        output: [...output.slice(0, -1), action.updatedWord]
+        output: [...output.slice(0, -1), updatedWord]
       }
     default:
       throw Error(`unknown action type ${action.type}`)
@@ -55,7 +62,7 @@ const IOReducer = (state, action) => {
 }
 
 const useT9 = () => {
-  const [{ input, output }, dispatch] = useReducer(IOReducer, initialState)
+  const [{ input, output }, dispatch] = useReducer(ioReducer, ioInitialState)
   const [predictions, setPredictions] = useState([])
   const [predictionIndex, setPredictionIndex] = useState(0)
 
