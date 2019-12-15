@@ -9,7 +9,7 @@ function App() {
 
   return (
     <div className="Body">
-      <Screen text={output} />
+      <Screen text={output} cursorPos={30} />
       <Keyboard
         onInput={addChar}
         onCycle={cyclePrediction}

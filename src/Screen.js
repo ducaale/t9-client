@@ -1,11 +1,11 @@
 import React from 'react'
 import './App.css'
 
-const Screen = ({ text }) => {
+const Screen = ({ text, cursorPos }) => {
   return (
     <div className="Screen">
-      <span>{text}</span>
-      <span className="Screen-cursor">|</span>
+      <span className="Screen-text">{text}</span>
+      <span className="Screen-cursor">{'\u00A0'.repeat(cursorPos)}|</span>
     </div>
   )
 }

@@ -4,8 +4,8 @@ import './App.css'
 const Keyboard = ({ onBackspace, onInput, onCycle }) => {
   return (
     <div className="Keyboard">
-      <span></span>
-      <span></span>
+      <button disabled>⯇</button>
+      <button disabled>⯈</button>
       <button onClick={onBackspace}>⌫</button>
       <button disabled>1</button>
       <button onClick={() => onInput('2')}>2 abc</button>
