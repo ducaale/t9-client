@@ -5,15 +5,25 @@ import useT9 from './useT9'
 import './App.css'
 
 function App() {
-  const { output, addChar, deleteChar, cyclePrediction } = useT9()
+  const {
+    output,
+    cursorPos,
+    addChar,
+    deleteChar,
+    incrementCursorPos,
+    decrementCursorPos,
+    cyclePrediction
+  } = useT9()
 
   return (
     <div className="Body">
-      <Screen text={output} cursorPos={30} />
+      <Screen text={output} cursorPos={cursorPos} />
       <Keyboard
         onInput={addChar}
         onCycle={cyclePrediction}
         onBackspace={deleteChar}
+        onIncrementCursorPos={incrementCursorPos}
+        onDecrementCursorPos={decrementCursorPos}
       />
     </div>
   );

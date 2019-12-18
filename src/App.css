@@ -27,14 +27,20 @@
   100% { opacity: 0; }
 }
 
-.Screen-cursor {
-  opacity: 1;
-  animation: cursor 1s infinite;
+.Screen-text-container {
+  grid-area: 1 / 1 / 2 / 2;
+}
 
+.Screen-cursor-container {
   grid-area: 1 / 1 / 2 / 2;
   margin-left: -4px;
 }
 
-.Screen-text {
-  grid-area: 1 / 1 / 2 / 2;
+.Screen-cursor {
+  opacity: 1;
+  animation: cursor 1s infinite;
+}
+
+.Screen-hidden-char {
+  opacity: 0;
 }

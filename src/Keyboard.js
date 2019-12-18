@@ -1,11 +1,17 @@
 import React from 'react'
 import './App.css'
 
-const Keyboard = ({ onBackspace, onInput, onCycle }) => {
+const Keyboard = ({
+  onBackspace,
+  onInput,
+  onCycle,
+  onIncrementCursorPos,
+  onDecrementCursorPos
+}) => {
   return (
     <div className="Keyboard">
-      <button disabled>⯇</button>
-      <button disabled>⯈</button>
+      <button onClick={onDecrementCursorPos}>⯇</button>
+      <button onClick={onIncrementCursorPos}>⯈</button>
       <button onClick={onBackspace}>⌫</button>
       <button disabled>1</button>
       <button onClick={() => onInput('2')}>2 abc</button>

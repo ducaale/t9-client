@@ -1,14 +1,15 @@
 import { useState, useReducer, useEffect } from 'react';
 import { getPrediction } from './t9Service'
 
-const ioInitialState = { input: [''], output: [''] }
+const ioInitialState = { input: [''], output: [''], cursorPos: 0 }
 const ioReducer = (state, action) => {
-  const {input, output } = state
+  const {input, output, cursorPos } = state
   switch(action.type) {
     case 'add_char':
       if (action.char === ' ') {
         return {
           ...state,
+          cursorPos: cursorPos + 1,
           input: [...input, ''],
           output: [...output, '']
         }
@@ -16,6 +17,7 @@ const ioReducer = (state, action) => {
 
       return {
         ...state,
+        cursorPos: cursorPos + 1,
         input: [...input.slice(0, -1), input[input.length-1] + action.char],
         output: [...output.slice(0, -1), output[output.length-1] + '_']
       }
@@ -28,6 +30,7 @@ const ioReducer = (state, action) => {
       if (!input[input.length-1].length) {
         return {
           ...state,
+          cursorPos: cursorPos - 1,
           input: [...input.slice(0, -1)],
           output: [...output.slice(0, -1)]
         }
@@ -35,8 +38,22 @@ const ioReducer = (state, action) => {
 
       return {
         ...state,
+        cursorPos: cursorPos - 1,
         input: [...input.slice(0, -1), input[input.length-1].slice(0, -1)],
         output: [...output.slice(0, -1), output[output.length-1].slice(0, -1)]
+      }
+    
+    case 'increment_cursor_pos':
+      const inputLength = input.join(' ').length
+      return {
+        ...state,
+        cursorPos: Math.min(inputLength, cursorPos + 1)
+      }
+
+    case 'decrement_cursor_pos':
+      return {
+        ...state,
+        cursorPos: Math.max(0, cursorPos - 1)
       }
     
     case 'update_last_output':
@@ -62,7 +79,7 @@ const ioReducer = (state, action) => {
 }
 
 const useT9 = () => {
-  const [{ input, output }, dispatch] = useReducer(ioReducer, ioInitialState)
+  const [{ input, output, cursorPos }, dispatch] = useReducer(ioReducer, ioInitialState)
   const [predictions, setPredictions] = useState([])
   const [predictionIndex, setPredictionIndex] = useState(0)
 
@@ -84,8 +101,11 @@ const useT9 = () => {
 
   return {
     output: output.join(' '),
+    cursorPos,
     addChar: char => dispatch({ type: 'add_char', char }),
     deleteChar: () => dispatch({ type: 'delete_char' }),
+    incrementCursorPos: () => dispatch({ type: 'increment_cursor_pos' }),
+    decrementCursorPos: () => dispatch({ type: 'decrement_cursor_pos' }),
     cyclePrediction: () =>
       setPredictionIndex(prev => (prev + 1) % predictions.length)
   }
