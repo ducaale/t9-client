@@ -22,26 +22,14 @@
 }
 
 @keyframes cursor {
-  0% { opacity: 0; }
-  50% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-.Screen-text-container {
-  grid-area: 1 / 1 / 2 / 2;
-}
-
-.Screen-cursor-container {
-  grid-area: 1 / 1 / 2 / 2;
-  margin-left: -4px;
-  margin-right: 4px;
+  0% { border-color: transparent; }
+  50% { border-color: #333; }
+  100% { border-color: transparent; }
 }
 
 .Screen-cursor {
-  opacity: 1;
   animation: cursor 1s infinite;
-}
-
-.Screen-hidden-char {
-  opacity: 0;
+  border-color: #333;
+  border-left: 1px solid;
+  margin-left: -1px;
 }
