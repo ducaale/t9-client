@@ -47,11 +47,11 @@ const ioReducer = (state, action) => {
         return state
       }
 
-      if (wordIndex === 0) {
+      if (offset === 0) {
         return {
           ...state,
           cursorPos: cursorPos - 1,
-          input: updateElements(input, wordIndex-1, 2, (words) => [merge(words)]),
+          input: updateElements(input, wordIndex-1, 2, words => [merge(...words)]),
           selectedPredictions: updateElements(selectedPredictions, wordIndex-1, 2, () => [0])
         }
       }
@@ -59,8 +59,8 @@ const ioReducer = (state, action) => {
       return {
         ...state,
         cursorPos: cursorPos - 1,
-        input: updateElements(input, wordIndex, word => deleteFrom(word, offset)),
-        selectedPredictions: updateElements(selectedPredictions, wordIndex, () => [0])
+        input: updateElement(input, wordIndex, word => [deleteFrom(word, offset)]),
+        selectedPredictions: updateElement(selectedPredictions, wordIndex, () => [0])
       }
     
     case 'increment_cursor_pos':
