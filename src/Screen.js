@@ -1,11 +1,14 @@
 import React from 'react'
+import { range } from './utils'
 import './App.css'
 
-const Screen = ({ text, cursorPos }) => {
+const Screen = ({ loading, text, cursorPos }) => {
+  if (loading) return <div className="Screen">Loading...</div>
+ 
   return (
     <div className="Screen">
       <span className="Screen-text-container">
-        {range(text.length + 1).map(i =>
+        {range({ end: text.length + 1 }).map(i =>
           <span key={i} className={i === cursorPos ? "Screen-cursor" : ""}>
             {i < text.length ? text[i] : '\u00A0' }
           </span>
@@ -16,5 +19,3 @@ const Screen = ({ text, cursorPos }) => {
 }
 
 export default Screen
-
-const range = n => [...Array(n).keys()]

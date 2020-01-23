@@ -1,46 +1,66 @@
-import { useState, useReducer, useEffect } from 'react';
-import { getPrediction } from './t9Service'
+import { useReducer, useCallback } from 'react';
+import { getCachedPrediction } from './t9Service'
+import {
+  zip,
+  partition,
+  insertAt,
+  deleteFrom,
+  merge,
+  getCharPos,
+  updateElement,
+  updateElements,
+  usePromise
+} from './utils'
 
-const ioInitialState = { input: [''], output: [''], cursorPos: 0 }
+const ioInitialState = {
+  input: [''],
+  output: [''],
+  selectedPredictions: [0],
+  cursorPos: 0
+}
 const ioReducer = (state, action) => {
-  const {input, output, cursorPos } = state
+  const { input, selectedPredictions, cursorPos } = state
+  const { wordIndex, offset } = getCharPos(input, cursorPos)
+
   switch(action.type) {
     case 'add_char':
       if (action.char === ' ') {
         return {
           ...state,
           cursorPos: cursorPos + 1,
-          input: [...input, ''],
-          output: [...output, '']
+          input: updateElement(input, wordIndex, word => partition(word, offset)),
+          selectedPredictions: updateElement(selectedPredictions, wordIndex, predictionIndex =>
+            [predictionIndex, 0]
+          )
         }
       }
 
       return {
         ...state,
         cursorPos: cursorPos + 1,
-        input: [...input.slice(0, -1), input[input.length-1] + action.char],
-        output: [...output.slice(0, -1), output[output.length-1] + '_']
+        input: updateElement(input, wordIndex, word => [insertAt(word, offset, action.char)]),
+        selectedPredictions: updateElement(selectedPredictions, wordIndex, () => [0])
       }
     
     case 'delete_char':
-      if (input.length === 1 && input[0] === '') {
+      if (wordIndex === 0 && offset === 0) {
         return state
       }
 
-      if (!input[input.length-1].length) {
+      if (wordIndex === 0) {
         return {
           ...state,
           cursorPos: cursorPos - 1,
-          input: [...input.slice(0, -1)],
-          output: [...output.slice(0, -1)]
+          input: updateElements(input, wordIndex-1, 2, (words) => [merge(words)]),
+          selectedPredictions: updateElements(selectedPredictions, wordIndex-1, 2, () => [0])
         }
       }
 
       return {
         ...state,
         cursorPos: cursorPos - 1,
-        input: [...input.slice(0, -1), input[input.length-1].slice(0, -1)],
-        output: [...output.slice(0, -1), output[output.length-1].slice(0, -1)]
+        input: updateElements(input, wordIndex, word => deleteFrom(word, offset)),
+        selectedPredictions: updateElements(selectedPredictions, wordIndex, () => [0])
       }
     
     case 'increment_cursor_pos':
@@ -56,58 +76,43 @@ const ioReducer = (state, action) => {
         cursorPos: Math.max(0, cursorPos - 1)
       }
     
-    case 'update_last_output':
-      const lastInput = input[input.length-1]
-      const { updatedWord } = action
-
-      if (!lastInput.length) {
-        console.log('should not update an empty word')
-        return state
-      }
-      if (lastInput.length !== updatedWord.length) {
-        console.log('ignoring stale word')
-        return state
-      }
-
+    case 'increment_prediction_index':
       return {
         ...state,
-        output: [...output.slice(0, -1), updatedWord]
+        selectedPredictions: updateElement(selectedPredictions, wordIndex, predictionIndex =>
+          [predictionIndex + 1]
+        )
       }
+
     default:
       throw Error(`unknown action type ${action.type}`)
   }
 }
 
 const useT9 = () => {
-  const [{ input, output, cursorPos }, dispatch] = useReducer(ioReducer, ioInitialState)
-  const [predictions, setPredictions] = useState([])
-  const [predictionIndex, setPredictionIndex] = useState(0)
+  const [{ input, selectedPredictions, cursorPos }, dispatch] = useReducer(
+    ioReducer,
+    ioInitialState
+  )
 
-  useEffect(() => {
-    getPrediction(input[input.length-1]).then(prediction => {
-      setPredictionIndex(0)
-      setPredictions(prediction)
-    })
-  }, [input])
-
-  useEffect(() => {
-    if (predictions[predictionIndex]) {
-      dispatch({
-        type: 'update_last_output',
-        updatedWord: predictions[predictionIndex]
-      })
-    }
-  }, [predictions, predictionIndex])
+  // TODO: expriment with react-concurrent mode in the future
+  const getOutput = useCallback(() =>
+    Promise.all(
+      zip(input, selectedPredictions).map(args => getCachedPrediction(...args))
+    ),
+    [input, selectedPredictions]
+  )
+  const [output, loading] = usePromise(getOutput)
 
   return {
-    output: output.join(' '),
+    loading,
+    output: loading ? '' : output.join(' '),
     cursorPos,
     addChar: char => dispatch({ type: 'add_char', char }),
     deleteChar: () => dispatch({ type: 'delete_char' }),
     incrementCursorPos: () => dispatch({ type: 'increment_cursor_pos' }),
     decrementCursorPos: () => dispatch({ type: 'decrement_cursor_pos' }),
-    cyclePrediction: () =>
-      setPredictionIndex(prev => (prev + 1) % predictions.length)
+    cyclePrediction: () => dispatch({ type: 'increment_prediction_index' })
   }
 }
 

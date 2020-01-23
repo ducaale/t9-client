@@ -1,5 +1,5 @@
 
-export const getPrediction = input => (
+const getPrediction = input => (
   fetch(`http://localhost:3001?input=${input}`)
     .then(res => {
       if (res.status !== 200) {
@@ -13,3 +13,13 @@ export const getPrediction = input => (
       return []
     })
 )
+
+const cache = {}
+export const getCachedPrediction = async (input, index) => {
+  if (!cache[input]) {
+    cache[input] = await getPrediction(input)
+  }
+
+  const predictions = cache[input]
+  return predictions[index % predictions.length]
+}

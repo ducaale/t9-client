@@ -6,6 +6,7 @@ import './App.css'
 
 function App() {
   const {
+    loading,
     output,
     cursorPos,
     addChar,
@@ -17,7 +18,7 @@ function App() {
 
   return (
     <div className="Body">
-      <Screen text={output} cursorPos={cursorPos} />
+      <Screen loading={loading} text={output} cursorPos={cursorPos} />
       <Keyboard
         onInput={addChar}
         onCycle={cyclePrediction}
