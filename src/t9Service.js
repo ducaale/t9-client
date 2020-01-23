@@ -21,5 +21,5 @@ export const getCachedPrediction = async (input, index) => {
   }
 
   const predictions = cache[input]
-  return predictions[index % predictions.length]
+  return predictions[index % predictions.length] || input
 }

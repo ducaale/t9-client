@@ -96,6 +96,7 @@ const useT9 = () => {
   )
 
   // TODO: expriment with react-concurrent mode in the future
+  // and don't show loading up to 2s
   const getOutput = useCallback(() =>
     Promise.all(
       zip(input, selectedPredictions).map(args => getCachedPrediction(...args))
