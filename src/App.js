@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import Keyboard from './Keyboard'
 import Screen from './Screen'
 import useT9 from './useT9'
@@ -6,8 +6,7 @@ import './App.css'
 
 function App() {
   const {
-    loading,
-    output,
+    outputResource,
     cursorPos,
     addChar,
     deleteChar,
@@ -18,7 +17,7 @@ function App() {
 
   return (
     <div className="Body">
-      <Screen loading={loading} text={output} cursorPos={cursorPos} />
+      <Screen textResource={outputResource} cursorPos={cursorPos} />
       <Keyboard
         onInput={addChar}
         onCycle={cyclePrediction}

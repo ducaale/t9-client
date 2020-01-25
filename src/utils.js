@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 
 export const zip = (arr1, arr2) => {
   return arr1.map((e, i) => [e, arr2[i]])
@@ -57,16 +56,29 @@ export const getCharPos = (words, cursorPos) => {
   }
 }
 
-export const usePromise = fn => {
-  const [loading, setLoading] = useState(true)
-  const [data, setData] = useState(null)
-  useEffect(() => {
-    setLoading(true)
-    fn().then(data => {
-      setData(data)
-      setLoading(false)
-    })
-  }, [fn])
-
-  return [data, loading]
+// copy-pasted from react concurrent docs
+export function wrapPromise(promise) {
+  let status = "pending";
+  let result;
+  let suspender = promise.then(
+    r => {
+      status = "success";
+      result = r;
+    },
+    e => {
+      status = "error";
+      result = e;
+    }
+  );
+  return {
+    read() {
+      if (status === "pending") {
+        throw suspender;
+      } else if (status === "error") {
+        throw result;
+      } else if (status === "success") {
+        return result;
+      }
+    }
+  };
 }

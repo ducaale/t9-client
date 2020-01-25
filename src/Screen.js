@@ -1,10 +1,9 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { range } from './utils'
 import './App.css'
 
-const Screen = ({ loading, text, cursorPos }) => {
-  if (loading) return <div className="Screen">Loading...</div>
- 
+const Screen = ({ textResource, cursorPos }) => {
+  const text = textResource.read()
   return (
     <div className="Screen">
       <span className="Screen-text-container">
@@ -18,4 +17,8 @@ const Screen = ({ loading, text, cursorPos }) => {
   )
 }
 
-export default Screen
+export default (props) => (
+  <Suspense fallback={<div className="Screen">Loading...</div>}>
+    <Screen {...props} />
+  </Suspense>
+)

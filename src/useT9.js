@@ -1,4 +1,4 @@
-import { useReducer, useCallback } from 'react';
+import { useReducer, useMemo } from 'react';
 import { getCachedPrediction } from './t9Service'
 import {
   zip,
@@ -9,7 +9,7 @@ import {
   getCharPos,
   updateElement,
   updateElements,
-  usePromise
+  wrapPromise
 } from './utils'
 
 const ioInitialState = {
@@ -95,19 +95,20 @@ const useT9 = () => {
     ioInitialState
   )
 
-  // TODO: expriment with react-concurrent mode in the future
-  // and don't show loading up to 2s
-  const getOutput = useCallback(() =>
-    Promise.all(
-      zip(input, selectedPredictions).map(args => getCachedPrediction(...args))
-    ),
-    [input, selectedPredictions]
-  )
-  const [output, loading] = usePromise(getOutput)
+  const outputResource =
+    useMemo(
+      () => wrapPromise(
+        Promise.all(
+          zip(input, selectedPredictions)
+            .map(args => getCachedPrediction(...args))
+        )
+        .then(words => words.join(' '))
+      ),
+      [input, selectedPredictions]
+    )
 
   return {
-    loading,
-    output: loading ? '' : output.join(' '),
+    outputResource,
     cursorPos,
     addChar: char => dispatch({ type: 'add_char', char }),
     deleteChar: () => dispatch({ type: 'delete_char' }),
